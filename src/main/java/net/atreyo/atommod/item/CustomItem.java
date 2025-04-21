@@ -44,7 +44,7 @@ public class CustomItem extends Item {
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         if (!context.getLevel().isClientSide && context.getPlayer() instanceof ServerPlayer) {
             // Sending system message to player
-            context.getPlayer().sendSystemMessage(Component.literal("Well, it seems the gun is working"));
+            context.getPlayer().sendSystemMessage(Component.literal("onItemUseFirst"));
             atommod.LOGGER.info("Well");
             // Adding gold block to player's inventory
             ItemStack goldstack = new ItemStack(Items.GOLD_BLOCK, 50);
@@ -69,7 +69,7 @@ public class CustomItem extends Item {
     public InteractionResult useOn(Level world, Player player, InteractionHand hand , UseOnContext context) {
         // Firing the grenade when used
         if (!world.isClientSide) {
-            context.getPlayer().sendSystemMessage(Component.literal("Well, it seems the grenade is thrown"));
+            context.getPlayer().sendSystemMessage(Component.literal("useOn"));
             atommod.LOGGER.info("Well");
 
             use(world, player , hand);
@@ -82,26 +82,34 @@ public class CustomItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand pUsedHand) {
         Vec3 dir = player.getLookAngle();
         // Calculate spawn position a bit in front of the player
-        player.sendSystemMessage(Component.literal("Well, it seems the grenade is working"));
+        player.sendSystemMessage(Component.literal("use"));
         atommod.LOGGER.info("Well");
 
-        // Create the explosion
-        Explosion explosion = new Explosion(level, player, player.getX(), player.getX(), player.getZ(), 10, true, Explosion.BlockInteraction.DESTROY);
 
-        explosion.explode();
-        explosion.finalizeExplosion(false); // Finish explosion without causing block drops
 
         // Create the "Pig" entity (for testing purposes, you can use any projectile or entity)
         Pig pigEntity = new Pig(EntityType.PIG, level);
         pigEntity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,999999));
+        pigEntity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE,20,10));
+
         pigEntity.setPos(player.getX(), player.getY(), player.getZ());
-        pigEntity.setDeltaMovement(dir.scale(2.0)); // Set the direction of the pig (this could be a projectile)
-        atommod.LOGGER.info("Well");
+        pigEntity.setDeltaMovement(dir.scale(2.0));
+        // Set the direction of the pig (this could be a projectile)
+        pigEntity.setBaby(true);
+        // Create the explosion
+        Explosion explosion = new Explosion(level, pigEntity, pigEntity.getX(), pigEntity.getY(), pigEntity.getZ(), 10, true, Explosion.BlockInteraction.DESTROY);
+        if(pigEntity.getY() < player.getY()) {
+            explosion.explode();
+            explosion.finalizeExplosion(true); // Finish explosion without causing block drops
+            atommod.LOGGER.info("Well");
+        }
+
 
         // Add the entity to the world
         level.addFreshEntity(pigEntity);
         //Remembet to account for each and single key
-        return super.use(level, player, pUsedHand);
+     //   return super.use(level, player, pUsedHand);
+        return InteractionResultHolder.success(player.getItemInHand(pUsedHand));
     }
 
     // This method is where you actually create and spawn the grenade's explosion
@@ -109,7 +117,7 @@ public class CustomItem extends Item {
         Vec3 dir = player.getLookAngle();
         // Calculate spawn position a bit in front of the player
 
-        context.getPlayer().sendSystemMessage(Component.literal("Well, it seems the grenade is working"));
+        context.getPlayer().sendSystemMessage(Component.literal("useGreande"));
         atommod.LOGGER.info("Well");
 
         // Create the explosion

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "atomod:block/ochre_blocks"
+    }
+  }
+}

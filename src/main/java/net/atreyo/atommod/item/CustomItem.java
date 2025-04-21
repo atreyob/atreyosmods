@@ -87,11 +87,13 @@ public class CustomItem extends Item {
 
         // Create the explosion
         Explosion explosion = new Explosion(level, player, player.getX(), player.getX(), player.getZ(), 10, true, Explosion.BlockInteraction.DESTROY);
+
         explosion.explode();
         explosion.finalizeExplosion(false); // Finish explosion without causing block drops
 
         // Create the "Pig" entity (for testing purposes, you can use any projectile or entity)
         Pig pigEntity = new Pig(EntityType.PIG, level);
+        pigEntity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING,999999));
         pigEntity.setPos(player.getX(), player.getY(), player.getZ());
         pigEntity.setDeltaMovement(dir.scale(2.0)); // Set the direction of the pig (this could be a projectile)
         atommod.LOGGER.info("Well");

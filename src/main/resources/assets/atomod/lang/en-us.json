@@ -3,5 +3,8 @@
   "block.atomod.steel_blocks": "Block Of Steel",
   "item.atomod.customitem": "Grenade",
   "creativetab.creativemodtab": "Ato tab",
-  "block.atomod.luckyblocks": "Lucky Block"
+  "block.atomod.lucky_blocks": "Lucky Block",
+  "atomod:block/cow_bell": "CowBell",
+  "tooltip.atomod.lucky_blocks": "Hello",
+  "tooltip.atomod.lucky_blocks.shift":"Bye",
 }

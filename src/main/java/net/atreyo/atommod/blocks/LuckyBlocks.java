@@ -2,25 +2,25 @@ package net.atreyo.atommod.blocks;
 
 import net.atreyo.atommod.atommod;
 import net.atreyo.atommod.item.ModItems;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageEffects;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Zoglin;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -31,13 +31,17 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.predicates.DamageSourceCondition;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -46,17 +50,11 @@ public class LuckyBlocks extends Block {
         super(pProperties);
     }
 
-
-
-
-
-
-
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         Random rand = new Random();
-        int outcome = rand.nextInt(4);
+        int outcome = rand.nextInt(5);
 
         Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 10, false);
         if (player == null) return;
@@ -200,8 +198,38 @@ public class LuckyBlocks extends Block {
 
 
             }
+            case 4 -> {
+                Random dx = new Random();
+                int dex = dx.nextInt(-15,30);
+                Random dy = new Random();
+                int dey = dx.nextInt(-15,30);
+                Random dz = new Random();
+                int dez = dx.nextInt(-15,30);
+                Vec3 playerpos = new Vec3(player.getBlockX() +dex,player.getBlockY() + dey
+                        ,player.getBlockZ() + dez);
+
+                player.move(MoverType.PISTON,playerpos);
+                player.giveExperienceLevels(399);
+                player.giveExperiencePoints(20);
+                player.causeFoodExhaustion(20);
+                // how to find damage soruces
+          //      player.causeFallDamage(2,20, new DamageSource(DamageSou));
+
+            }
         }
 
 
     }
+
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
+        if(Screen.hasShiftDown()){
+            pTooltip.add(Component.translatable("tooltip.atomod.lucky_blocks"));
+
+        } else {
+            pTooltip.add(Component.translatable("tooltip.atomod.lucky_blocks.shift"));
+
+        }
+        super.appendHoverText(pStack, pLevel, pTooltip, pFlag);
     }
+}
